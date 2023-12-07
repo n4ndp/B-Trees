@@ -2,140 +2,155 @@
 #include <iostream>
 #include <memory>
 
-template <typename TK>
+template <typename TK, typename TV>
 class BTree {
 private:
     struct Node {
-        int min_degree;
-        int num_keys;
-        bool is_leaf;
+        int min_degree; // Minimum degree (defines the range for number of keys)
+        int num_keys; // Current number of keys
+        bool is_leaf; // Is true when node is leaf. Otherwise false
 
-        std::unique_ptr<TK[]> keys;
+        // pair<key, value>
+        std::unique_ptr<std::pair<TK, TV>[]> keys;
         std::unique_ptr<std::shared_ptr<Node>[]> children;
 
         Node(bool is_leaf, int min_degree) : is_leaf(is_leaf), min_degree(min_degree), num_keys(0) {
-            keys = std::make_unique<TK[]>(2 * min_degree - 1);
-            children = std::make_unique<std::shared_ptr<Node>[]>(2 * min_degree);
-        }
-
-        bool search(TK key) {
-            int i = 0;
-            while (i < num_keys && key > keys[i]) { // find the first key that is greater than or equal to the key
-                i++;
-            }
-            if (keys[i] == key) {
-                return true; // found
-            }
-            if (is_leaf) {
-                return false; // not found
-            }
-            return children[i]->search(key); // recursively search the subtree
-        }
-
-        void insert_non_full(TK key) {
-            int i = num_keys - 1;
-            if (is_leaf) { // leaf node
-                while (i >= 0 && key < keys[i]) { // find the first key that is less than or equal to the key
-                    keys[i + 1] = keys[i];
-                    i--;
-                }
-                keys[i + 1] = key;
-                num_keys++;
-            } else { // internal node
-                while (i >= 0 && key < keys[i]) { // find the first key that is less than or equal to the key
-                    i--;
-                }
-                i++;
-                if (children[i]->num_keys == 2 * min_degree - 1) { // child is full
-                    split_child(i); // split the child
-                    if (key > keys[i]) {
-                        i++;
-                    }
-                }
-                children[i]->insert_non_full(key); // recursively insert the key
-            }
-        }
-
-        void split_child(int i) {
-            auto child = children[i];
-            auto new_child = std::make_shared<Node>(child->is_leaf, min_degree);
-            new_child->num_keys = min_degree - 1;
-
-            for (int j = 0; j < min_degree - 1; j++) { // copy the last min_degree - 1 keys to the new child
-                new_child->keys[j] = child->keys[j + min_degree];
-            }
-            if (!child->is_leaf) { // copy the last min_degree children to the new child if it is not a leaf node
-                for (int j = 0; j < min_degree; j++) {
-                    new_child->children[j] = child->children[j + min_degree];
-                }
-            }
-
-            child->num_keys = min_degree - 1;
-            for (int j = num_keys; j >= i + 1; j--) { // make room for the new child
-                children[j + 1] = children[j];
-            }
-
-            children[i + 1] = new_child;
-            for (int j = num_keys - 1; j >= i; j--) { // make room for the new key
-                keys[j + 1] = keys[j];
-            }
-            keys[i] = child->keys[min_degree - 1];
-            num_keys++;
+            keys = std::make_unique<std::pair<TK, TV>[]>(2 * min_degree - 1); // Allocate memory for maximum number of possible keys
+            children = std::make_unique<std::shared_ptr<Node>[]>(2 * min_degree); // Allocate memory for maximum number of possible children
         }
     };
 
     std::shared_ptr<Node> root;
     int min_degree;
 
-public:
-    BTree(int min_degree) : min_degree(min_degree), root(nullptr) {}
+public: // public functions
+    BTree(int min_degree) : min_degree(min_degree) {
+        root = nullptr;
+    }
 
     bool search(TK key) {
-        return (root != nullptr) ? root->search(key) : false;
+        return search(root, key) != nullptr;
     }
 
-    void insert(TK key) {
-        if (root == nullptr) {
+    void insert(TK key, TV value) {
+        if (root == nullptr) { // Tree is empty
             root = std::make_shared<Node>(true, min_degree);
-            root->keys[0] = key;
-            root->num_keys++;
-        } else {
-            if (root->num_keys == 2 * min_degree - 1) {
-                auto new_root = std::make_shared<Node>(false, min_degree);
+            root->keys[0] = std::make_pair(key, value);
+            root->num_keys = 1;
+        } else { // Tree is not empty
+            if (root->num_keys == 2 * min_degree - 1) { // Root is full
+                std::shared_ptr<Node> new_root = std::make_shared<Node>(false, min_degree);
                 new_root->children[0] = root;
-                new_root->split_child(0);
-
-                int i = 0;
-                if (new_root->keys[0] < key) {
-                    i++;
+                split_child(new_root, 0, root);
+                int index = 0;
+                if (new_root->keys[0].first < key) {
+                    ++index;
                 }
-
-                new_root->children[i]->insert_non_full(key);
+                insert_non_full(new_root->children[index], key, value);
                 root = new_root;
-            } else {
-                root->insert_non_full(key);
+            } else { // Root is not full
+                insert_non_full(root, key, value);
             }
         }
     }
 
-    void inorder() const {
+    void print() {
         if (root != nullptr) {
-            inorder(root);
+            print(root);
         }
     }
 
-private:
-    void inorder(std::shared_ptr<Node> node) const {
+private: // helper functions
+    int find_key(std::shared_ptr<Node> node, TK key) {
+        int index = 0;
+        while (index < node->num_keys && node->keys[index].first < key) { // Find the first key greater than or equal to k
+            ++index;
+        }
+        return index;
+    }
+
+    std::shared_ptr<Node> search(std::shared_ptr<Node> node, TK key) {
+        int index = find_key(node, key);
+
+        if (index < node->num_keys && node->keys[index].first == key) { // Found key
+            return node;
+        }
+
         if (node->is_leaf) {
-            for (int i = 0; i < node->num_keys; i++) {
-                std::cout << node->keys[i] << " ";
+            return nullptr;
+        }
+
+        return search(node->children[index], key); // Recursively search the children
+    }
+    
+    void insert_non_full(std::shared_ptr<Node> node, TK key, TV value) {
+        int index = node->num_keys - 1;
+
+        if (node->is_leaf) { // Node is leaf
+            while (index >= 0 && node->keys[index].first > key) {
+                node->keys[index + 1] = node->keys[index];
+                --index;
             }
-        } else {
-            for (int i = 0; i < node->num_keys; i++) {
-                inorder(node->children[i]);
-                std::cout << node->keys[i] << " ";
+
+            node->keys[index + 1] = std::make_pair(key, value);
+            ++node->num_keys;
+        } else { // Node is not leaf (internal node)
+            while (index >= 0 && node->keys[index].first > key) {
+                --index;
             }
-            inorder(node->children[node->num_keys]);
+            index += 1;
+
+            if (node->children[index]->num_keys == 2 * min_degree - 1) {
+                split_child(node, index, node->children[index]);
+
+                if (node->keys[index].first < key) {
+                    ++index;
+                }
+            }
+            insert_non_full(node->children[index], key, value);
+        }
+    }
+
+    void split_child(std::shared_ptr<Node> node, int index, std::shared_ptr<Node> child) {
+        std::shared_ptr<Node> new_child = std::make_shared<Node>(child->is_leaf, min_degree);
+        new_child->num_keys = min_degree - 1;
+
+        for (int i = 0; i < min_degree - 1; ++i) { // Copy the last min_degree - 1 keys of child to new_child
+            new_child->keys[i] = child->keys[i + min_degree];
+        }
+
+        if (!child->is_leaf) { // Copy the last min_degree children of child to new_child
+            for (int i = 0; i < min_degree; ++i) {
+                new_child->children[i] = child->children[i + min_degree];
+            }
+        }
+
+        child->num_keys = min_degree - 1;
+
+        for (int i = node->num_keys; i >= index + 1; --i) { // Make room for new child
+            node->children[i + 1] = node->children[i];
+        }
+        node->children[index + 1] = new_child;
+
+        for (int i = node->num_keys - 1; i >= index; --i) {
+            node->keys[i + 1] = node->keys[i];
+        }
+        node->keys[index] = child->keys[min_degree - 1]; // Move the middle key of child to node
+
+        ++node->num_keys;
+    }
+
+    void print(std::shared_ptr<Node> node) {
+        int i;
+        for (i = 0; i < node->num_keys; ++i) {
+            if (!node->is_leaf) {
+                print(node->children[i]);
+            }
+            std::cout << node->keys[i].second << " ";
+        }
+
+        if (!node->is_leaf) {
+            print(node->children[i]);
         }
     }
 };
