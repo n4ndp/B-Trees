@@ -54,10 +54,8 @@ public: // public functions
         }
     }
 
-    void print() {
-        if (root != nullptr) {
-            print(root);
-        }
+    void pretty_print() {
+        pretty_print(root, 0);
     }
 
 private: // helper functions
@@ -140,17 +138,17 @@ private: // helper functions
         ++node->num_keys;
     }
 
-    void print(std::shared_ptr<Node> node) {
-        int i;
-        for (i = 0; i < node->num_keys; ++i) {
-            if (!node->is_leaf) {
-                print(node->children[i]);
+    void pretty_print(std::shared_ptr<Node> node, int depth) {
+        if (node != nullptr) {
+            for (int i = node->num_keys - 1; i >= 0; --i) {
+                if (!node->is_leaf) {
+                    pretty_print(node->children[i + 1], depth + 1);
+                }
+                std::cout << std::string(depth * 4, ' ') << node->keys[i].first << ":" << node->keys[i].second << std::endl;
             }
-            std::cout << node->keys[i].second << " ";
-        }
-
-        if (!node->is_leaf) {
-            print(node->children[i]);
+            if (!node->is_leaf) {
+                pretty_print(node->children[0], depth + 1);
+            }
         }
     }
 };

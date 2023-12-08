@@ -1,4 +1,4 @@
-#include "btree.hpp"
+#include "b_tree.hpp"
 
 int main() {
     BTree<int, std::string> tree(3);
@@ -9,8 +9,12 @@ int main() {
     tree.insert(4, "four");
     tree.insert(5, "five");
     tree.insert(6, "six");
+    tree.insert(7, "seven");
+    tree.insert(8, "eight");
+    tree.insert(9, "nine");
+    tree.insert(10, "ten");
 
-    tree.print();
+    tree.pretty_print();
 
     return 0;
 }
