@@ -99,7 +99,7 @@ private:
     int min_degree;
 
 public:
-    BTree(int min_degree) : min_degree(min_degree) {}
+    BTree(int min_degree) : min_degree(min_degree), root(nullptr) {}
 
     void insert(K key, V value) {
         auto k = std::make_unique<K>(key);
