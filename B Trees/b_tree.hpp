@@ -22,40 +22,40 @@ class BTree {
         std::pair<std::pair<k__ptr, v__ptr>, std::unique_ptr<Node>> insert(k__ptr key, v__ptr value) {
             // find the index
             int i = 0;
-            while (i < keys.size() && *key > *keys[i]) {
+            while (i < this->keys.size() && *key > *this->keys[i]) {
                 i++;
             }
 
-            if (is_leaf) { // CASE 1: node is a leaf
-                keys.insert(keys.begin() + i, std::move(key));
-                values.insert(values.begin() + i, std::move(value));
+            if (this->is_leaf) { // CASE 1: node is a leaf
+                this->keys.insert(this->keys.begin() + i, std::move(key));
+                this->values.insert(this->values.begin() + i, std::move(value));
             } else { // CASE 2: node is not a leaf
-                auto [median, new_child] = children[i]->insert(std::move(key), std::move(value));
+                auto [median, new_child] = this->children[i]->insert(std::move(key), std::move(value));
                 if (new_child) {
-                    keys.insert(keys.begin() + i, std::move(median.first));
-                    values.insert(values.begin() + i, std::move(median.second));
-                    children.insert(children.begin() + i + 1, std::move(new_child));
+                    this->keys.insert(this->keys.begin() + i, std::move(median.first));
+                    this->values.insert(this->values.begin() + i, std::move(median.second));
+                    this->children.insert(this->children.begin() + i + 1, std::move(new_child));
                 }
             }
 
             // if the node is full (has more than 2 * min_degree - 1 keys), split it
-            if (keys.size() > 2 * min_degree - 1) {
-                auto median_key = std::move(keys[min_degree - 1]);
-                auto median_value = std::move(values[min_degree - 1]);
-                auto right_split = std::make_unique<Node>(min_degree, is_leaf);
+            if (this->keys.size() > 2 * this->min_degree - 1) {
+                auto median_key = std::move(this->keys[this->min_degree - 1]);
+                auto median_value = std::move(this->values[this->min_degree - 1]);
+                auto right_split = std::make_unique<Node>(this->min_degree, this->is_leaf);
 
-                for (int i = min_degree; i < keys.size(); i++) {
-                    right_split->keys.push_back(std::move(keys[i]));
-                    right_split->values.push_back(std::move(values[i]));
+                for (int i = this->min_degree; i < this->keys.size(); i++) {
+                    right_split->keys.push_back(std::move(this->keys[i]));
+                    right_split->values.push_back(std::move(this->values[i]));
                 }
-                keys.erase(keys.begin() + min_degree - 1, keys.end());
-                values.erase(values.begin() + min_degree - 1, values.end());
+                this->keys.erase(this->keys.begin() + this->min_degree - 1, this->keys.end());
+                this->values.erase(this->values.begin() + this->min_degree - 1, this->values.end());
 
-                if (!is_leaf) {
-                    for (int i = min_degree; i < children.size(); i++) {
-                        right_split->children.push_back(std::move(children[i]));
+                if (!this->is_leaf) {
+                    for (int i = this->min_degree; i < this->children.size(); i++) {
+                        right_split->children.push_back(std::move(this->children[i]));
                     }
-                    children.erase(children.begin() + min_degree, children.end());
+                    this->children.erase(this->children.begin() + this->min_degree, this->children.end());
                 }
 
                 return std::make_pair(std::make_pair(std::move(median_key), std::move(median_value)), std::move(right_split));
@@ -63,33 +63,35 @@ class BTree {
 
             return std::make_pair(std::make_pair(nullptr, nullptr), nullptr);
         }
+
         V& search(K key) {
             // find the index
             int i = 0;
-            while (i < keys.size() && key > *keys[i]) {
+            while (i < this->keys.size() && key > *this->keys[i]) {
                 i++;
             }
 
-            if (i < keys.size() && key == *keys[i]) {
-                return *values[i];
-            } else if (is_leaf) {
+            if (i < this->keys.size() && key == *this->keys[i]) {
+                return *this->values[i];
+            } else if (this->is_leaf) {
                 throw std::runtime_error("key not found");
             } else {
-                return children[i]->search(key);
+                return this->children[i]->search(key);
             }
         }
+
         void pretty_print(int depth = 0) {
-            for (int i = 0; i < keys.size(); i++) {
-                if (!is_leaf) {
-                    children[i]->pretty_print(depth + 1);
+            for (int i = 0; i < this->keys.size(); i++) {
+                if (!this->is_leaf) {
+                    this->children[i]->pretty_print(depth + 1);
                 }
                 for (int j = 0; j < depth; j++) {
-                    std::cout << "  ";
+                    std::cout << "   ";
                 }
-                std::cout << *keys[i] << std::endl;
+                std::cout << *this->keys[i] << ": " << *this->values[i] << std::endl;
             }
-            if (!is_leaf) {
-                children[keys.size()]->pretty_print(depth + 1);
+            if (!this->is_leaf) {
+                this->children[this->keys.size()]->pretty_print(depth + 1);
             }
         }
     };
@@ -105,26 +107,31 @@ public:
         auto k = std::make_unique<K>(key);
         auto v = std::make_unique<V>(value);
 
-        if (!root) {
-            root = std::make_unique<Node>(min_degree, true);
-            root->keys.push_back(std::move(k));
-            root->values.push_back(std::move(v));
+        if (this->root == nullptr) {
+            auto new_root = std::make_unique<Node>(this->min_degree, true);
+            new_root->keys.push_back(std::move(k));
+            new_root->values.push_back(std::move(v));
+
+            this->root = std::move(new_root);
         } else {
-            auto [median, new_child] = root->insert(std::move(k), std::move(v));
+            auto [median, new_child] = this->root->insert(std::move(k), std::move(v));
+
             if (new_child) {
-                auto new_root = std::make_unique<Node>(min_degree, false);
+                auto new_root = std::make_unique<Node>(this->min_degree, false);
                 new_root->keys.push_back(std::move(median.first));
                 new_root->values.push_back(std::move(median.second));
-                new_root->children.push_back(std::move(root));
+                new_root->children.push_back(std::move(this->root));
                 new_root->children.push_back(std::move(new_child));
-                root = std::move(new_root);
+                this->root = std::move(new_root);
             }
         }
     }
+
     V& search(K key) {
-        return root->search(key);
+        return this->root->search(key);
     }
+
     void pretty_print() {
-        root->pretty_print();
+        this->root->pretty_print();
     }
 };

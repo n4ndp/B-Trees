@@ -3,16 +3,6 @@
 #include <vector>
 #include <memory>
 
-// B+ Tree example:
-// [13]
-// |____[2,4]
-// |    |____[1]
-// |    |____[2,3]
-// |    |____[4,11]
-// |____[14]
-//      |____[13]
-//      |____[14,15]
-
 template <
     typename K, // key type
     typename V> // value type
@@ -28,6 +18,7 @@ class BPlusTree {
         Node(int min_degree, bool is_leaf) : min_degree(min_degree), is_leaf(is_leaf), parent(nullptr) {}
 
         virtual std::pair<k__ptr, std::shared_ptr<Node>> insert(k__ptr key, v__ptr value) = 0;
+        virtual V& search(K key) = 0;
         virtual void pretty_print(int depth = 0) = 0;
     };
 
@@ -40,32 +31,31 @@ class BPlusTree {
         std::pair<k__ptr, std::shared_ptr<Node>> insert(k__ptr key, v__ptr value) override {
             // find the index
             int i = 0;
-            while (i < keys.size() && *key > *keys[i]) {
+            while (i < this->keys.size() && *key > *this->keys[i]) {
                 i++;
             }
             
-            auto [median, new_child] = children[i]->insert(std::move(key), std::move(value));
+            auto [median, new_child] = this->children[i]->insert(std::move(key), std::move(value));
 
             if (new_child) {
-                keys.insert(keys.begin() + i, median);
-                children.insert(children.begin() + i + 1, new_child);
+                this->keys.insert(this->keys.begin() + i, median);
+                this->children.insert(this->children.begin() + i + 1, new_child);
 
                 // if the node is full (has more than 2 * min_degree - 1 keys), split it
-                if (keys.size() > 2 * this->min_degree - 1) {
-                    auto median_key = keys[this->min_degree - 1];
-                    std::shared_ptr<Node> parent = this->parent; // Declare and assign 'parent'
+                if (this->keys.size() > 2 * this->min_degree - 1) {
+                    auto median_key = this->keys[this->min_degree - 1];
                     auto right_split = std::make_shared<InternalNode>(this->min_degree);
-                    right_split->parent = parent;
+                    //right_split->parent = this->parent;
 
-                    for (int i = this->min_degree; i < keys.size(); i++) {
-                        right_split->keys.push_back(keys[i]);
+                    for (int i = this->min_degree; i < this->keys.size(); i++) {
+                        right_split->keys.push_back(this->keys[i]);
                     }
-                    keys.erase(keys.begin() + this->min_degree - 1, keys.end());
+                    this->keys.erase(this->keys.begin() + this->min_degree - 1, this->keys.end());
 
-                    for (int i = this->min_degree; i < children.size(); i++) {
-                        right_split->children.push_back(children[i]);
+                    for (int i = this->min_degree; i < this->children.size(); i++) {
+                        right_split->children.push_back(this->children[i]);
                     }
-                    children.erase(children.begin() + this->min_degree, children.end());
+                    this->children.erase(this->children.begin() + this->min_degree, this->children.end());
 
                     return std::make_pair(median_key, right_split);
                 }
@@ -73,15 +63,26 @@ class BPlusTree {
 
             return std::make_pair(nullptr, nullptr);
         }
+
+        V& search(K key) override {
+            // find the index
+            int i = 0;
+            while (i < this->keys.size() && key >= *this->keys[i]) {
+                i++;
+            }
+
+            return this->children[i]->search(key);
+        }
+
         void pretty_print(int depth = 0) override {
-            for (int i = 0; i < keys.size(); i++) {
-                children[i]->pretty_print(depth + 1);
+            for (int i = 0; i < this->keys.size(); i++) {
+                this->children[i]->pretty_print(depth + 1);
                 for (int j = 0; j < depth; j++) {
                     std::cout << "  ";
                 }
-                std::cout << *keys[i] << std::endl;
+                std::cout << *this->keys[i] << std::endl;
             }
-            children[keys.size()]->pretty_print(depth + 1);
+            this->children[this->keys.size()]->pretty_print(depth + 1);
         }
     };
 
@@ -95,41 +96,51 @@ class BPlusTree {
         std::pair<k__ptr, std::shared_ptr<Node>> insert(k__ptr key, v__ptr value) override {
             // find the index
             int i = 0;
-            while (i < keys.size() && *key > *keys[i]) {
+            while (i < this->keys.size() && *key > *this->keys[i]) {
                 i++;
             }
 
-            keys.insert(keys.begin() + i, std::move(key));
-            values.insert(values.begin() + i, std::move(value));
+            this->keys.insert(this->keys.begin() + i, std::move(key));
+            this->values.insert(this->values.begin() + i, std::move(value));
 
             // if the node is full (has more than 2 * min_degree - 1 keys), split it
-            if (keys.size() > 2 * this->min_degree - 1) {
-                std::shared_ptr<Node> parent = this->parent; // Declare and assign 'parent'
+            if (this->keys.size() > 2 * this->min_degree - 1) {
                 auto right_split = std::make_shared<LeafNode>(this->min_degree);
-                right_split->parent = parent;
+                //right_split->parent = this->parent;
 
-                for (int i = this->min_degree; i < keys.size(); i++) {
-                    right_split->keys.push_back(std::move(keys[i]));
-                    right_split->values.push_back(std::move(values[i]));
+                for (int i = this->min_degree; i < this->keys.size(); i++) {
+                    right_split->keys.push_back(std::move(this->keys[i]));
+                    right_split->values.push_back(std::move(this->values[i]));
                 }
 
-                keys.erase(keys.begin() + this->min_degree, keys.end());
-                values.erase(values.begin() + this->min_degree, values.end());
+                this->keys.erase(this->keys.begin() + this->min_degree, this->keys.end());
+                this->values.erase(this->values.begin() + this->min_degree, this->values.end());
 
-                right_split->next = next;
-                next = right_split;
+                right_split->next = this->next;
+                this->next = right_split;
 
                 return std::make_pair(right_split->keys[0], right_split);
             }
 
             return std::make_pair(nullptr, nullptr);
         }
-        void pretty_print(int depth = 0) override {
-            for (int i = 0; i < keys.size(); i++) {
-                for (int j = 0; j < depth; j++) {
-                    std::cout << "  ";
+
+        V& search(K key) override {
+            for (int i = 0; i < this->keys.size(); i++) {
+                if (*this->keys[i] == key) {
+                    return *this->values[i];
                 }
-                std::cout << *keys[i] << std::endl;
+            }
+
+            throw std::runtime_error("Key not found");
+        }
+
+        void pretty_print(int depth = 0) override {
+            for (int i = 0; i < this->keys.size(); i++) {
+                for (int j = 0; j < depth; j++) {
+                    std::cout << "   ";
+                }
+                std::cout << *this->keys[i] << " : " << *this->values[i] << std::endl;
             }
         }
     };
@@ -145,29 +156,34 @@ public:
         auto k = std::make_shared<K>(key);
         auto v = std::make_unique<V>(value);
 
-        if (root == nullptr) {
-            auto new_root = std::make_shared<LeafNode>(min_degree);
+        if (this->root == nullptr) {
+            auto new_root = std::make_shared<LeafNode>(this->min_degree);
             new_root->keys.push_back(std::move(k));
             new_root->values.push_back(std::move(v));
 
-            root = new_root;
+            this->root = new_root;
         } else {
-            auto [median, new_child] = root->insert(std::move(k), std::move(v));
+            auto [median, new_child] = this->root->insert(std::move(k), std::move(v));
 
             if (new_child) {
-                auto new_root = std::make_shared<InternalNode>(min_degree);
+                auto new_root = std::make_shared<InternalNode>(this->min_degree);
                 new_root->keys.push_back(median);
-                new_root->children.push_back(root);
+                new_root->children.push_back(this->root);
                 new_root->children.push_back(new_child);
 
-                root->parent = new_root;
-                new_child->parent = new_root;
+                //this->root->parent = new_root;
+                //new_child->parent = new_root;
 
-                root = new_root;
+                this->root = new_root;
             }
         }
     }
+
+    V& search(K key) {
+        return this->root->search(key);
+    }
+
     void pretty_print() {
-        root->pretty_print();
+        this->root->pretty_print();
     }
 };

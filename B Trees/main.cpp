@@ -48,10 +48,19 @@ void bplustree() {
     std::cout << std::endl;
 
     tree.pretty_print();
+    tree.search(1) = "ONE";
+    tree.search(2) = "TWO";
+    tree.search(3) = "THREE";
+
+    std::cout << std::endl;
+
+    for (int i = 1; i <= 11; i++) {
+        std::cout << "tree.search(" << i << ") = " << tree.search(i) << std::endl;
+    }
 }
 
 int main() {
-    //btree();
+    btree();
     bplustree();
 
     return 0;
