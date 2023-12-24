@@ -140,7 +140,7 @@ class BPlusTree {
                 for (int j = 0; j < depth; j++) {
                     std::cout << "   ";
                 }
-                std::cout << *this->keys[i] << " : " << *this->values[i] << std::endl;
+                std::cout << *this->keys[i] << ": " << *this->values[i] << std::endl;
             }
         }
     };
