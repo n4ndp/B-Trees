@@ -1,0 +1,98 @@
+{
+    "Alice": [
+        {
+            "TransactionID": "ALC20231224083000T001",
+            "Timestamp": "2023-12-24T08:30:00Z",
+            "Amount": 235.75,
+            "Description": "Compra de víveres mensuales en supermercado XYZ, incluyendo productos frescos, abarrotes y artículos de limpieza"
+        },
+        {
+            "TransactionID": "ALC20231224091500T002",
+            "Timestamp": "2023-12-24T09:15:00Z",
+            "Amount": 102.45,
+            "Description": "Pago de factura de servicios públicos correspondiente al consumo de energía eléctrica y agua durante el mes anterior"
+        },
+        {
+            "TransactionID": "ALC20231224103000T003",
+            "Timestamp": "2023-12-24T10:30:00Z",
+            "Amount": 185.20,
+            "Description": "Transferencia a cuenta de ahorros como parte del ahorro mensual planificado"
+        },
+        {
+            "TransactionID": "ALC20231224120000T004",
+            "Timestamp": "2023-12-24T12:00:00Z",
+            "Amount": 150.00,
+            "Description": "Compra de regalos navideños para familiares y amigos cercanos"
+        },
+        {
+            "TransactionID": "ALC20231224141500T005",
+            "Timestamp": "2023-12-24T14:15:00Z",
+            "Amount": 78.90,
+            "Description": "Gastos en cena de celebración con amigos por motivo de fin de año"
+        }
+    ],
+    "Bob": [
+        {
+            "TransactionID": "BOB20231224114500T001",
+            "Timestamp": "2023-12-24T11:45:00Z",
+            "Amount": 78.60,
+            "Description": "Compra de ropa de invierno en tienda de moda, incluyendo abrigos y accesorios"
+        },
+        {
+            "TransactionID": "BOB20231224132000T002",
+            "Timestamp": "2023-12-24T13:20:00Z",
+            "Amount": 150.30,
+            "Description": "Retiro de efectivo en cajero automático para gastos diarios"
+        },
+        {
+            "TransactionID": "BOB20231224150000T003",
+            "Timestamp": "2023-12-24T15:00:00Z",
+            "Amount": 245.80,
+            "Description": "Compra de boletos para concierto de música en vivo de banda favorita"
+        },
+        {
+            "TransactionID": "BOB20231224171500T004",
+            "Timestamp": "2023-12-24T17:15:00Z",
+            "Amount": 320.45,
+            "Description": "Gasto en cena romántica con pareja por aniversario de relación"
+        },
+        {
+            "TransactionID": "BOB20231224203000T005",
+            "Timestamp": "2023-12-24T20:30:00Z",
+            "Amount": 95.25,
+            "Description": "Gastos en libros y materiales de estudio para cursos de desarrollo personal"
+        }
+    ],
+    "Charlie": [
+        {
+            "TransactionID": "CHR20231224093000T001",
+            "Timestamp": "2023-12-24T09:30:00Z",
+            "Amount": 320.15,
+            "Description": "Compra de boletos de avión para vacaciones familiares en destino turístico internacional"
+        },
+        {
+            "TransactionID": "CHR20231224120000T002",
+            "Timestamp": "2023-12-24T12:00:00Z",
+            "Amount": 89.99,
+            "Description": "Recarga de saldo en tarjeta de transporte público para viajes semanales al trabajo"
+        },
+        {
+            "TransactionID": "CHR20231224141500T003",
+            "Timestamp": "2023-12-24T14:15:00Z",
+            "Amount": 112.70,
+            "Description": "Gasto en cena de despedida con colegas por cambio de trabajo"
+        },
+        {
+            "TransactionID": "CHR20231224164500T004",
+            "Timestamp": "2023-12-24T16:45:00Z",
+            "Amount": 175.80,
+            "Description": "Compras en electrónica, adquisición de nuevo dispositivo móvil"
+        },
+        {
+            "TransactionID": "CHR20231224203000T005",
+            "Timestamp": "2023-12-24T20:30:00Z",
+            "Amount": 210.25,
+            "Description": "Compra de muebles para renovación del hogar"
+        }
+    ]
+}
