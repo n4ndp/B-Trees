@@ -80,6 +80,30 @@ class BTree {
             }
         }
 
+        void range_search(K lower_bound, K upper_bound, std::vector<std::pair<K, V>>& result) {
+            // find the index
+            int i = 0;
+            while (i < this->keys.size() && lower_bound > *this->keys[i]) {
+                i++;
+            }
+
+            if (this->is_leaf) {
+                while (i < this->keys.size() && upper_bound >= *this->keys[i]) {
+                    result.push_back(std::make_pair(*this->keys[i], *this->values[i]));
+                    i++;
+                }
+            } else {
+                while (i < this->keys.size() && upper_bound >= *this->keys[i]) {
+                    this->children[i]->range_search(lower_bound, upper_bound, result);
+                    result.push_back(std::make_pair(*this->keys[i], *this->values[i]));
+                    i++;
+                }
+                if (i < this->children.size()) {
+                    this->children[i]->range_search(lower_bound, upper_bound, result);
+                }
+            }
+        }
+
         void pretty_print(int depth = 0) {
             for (int i = 0; i < this->keys.size(); i++) {
                 if (!this->is_leaf) {
@@ -129,6 +153,12 @@ public:
 
     V& search(K key) {
         return this->root->search(key);
+    }
+
+    std::vector<std::pair<K, V>> range_search(K lower_bound, K upper_bound) {
+        std::vector<std::pair<K, V>> result;
+        this->root->range_search(lower_bound, upper_bound, result);
+        return result;
     }
 
     void pretty_print() {

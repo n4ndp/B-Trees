@@ -44,9 +44,25 @@ int main(int argc, char const *argv[]) {
     std::cout << "B Tree: " << std::endl;
     b_tree.pretty_print();
     std::cout << std::endl;
+
+    std::cout << "Range search [100.0, 200.0]: " << std::endl;
+    auto v = b_tree.range_search(100.0, 200.0);
+    for (const auto& pair : v) {
+        std::cout << pair << std::endl;
+    }
+
     std::cout << std::endl;
+    std::cout << std::endl;
+
     std::cout << "B+ Tree: " << std::endl;
     b_plus_tree.pretty_print();
+    std::cout << std::endl;
 
+    std::cout << "Range search [100.0, 200.0]: " << std::endl;
+    v = b_plus_tree.range_search(100.0, 200.0);
+    for (const auto& pair : v) {
+        std::cout << pair << std::endl;
+    }
+    
     return 0;
 }

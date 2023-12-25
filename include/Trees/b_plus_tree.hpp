@@ -19,6 +19,7 @@ class BPlusTree {
 
         virtual std::pair<k__ptr, std::shared_ptr<Node>> insert(k__ptr key, v__ptr value) = 0;
         virtual V& search(K key) = 0;
+        virtual void range_search(K lower_bound, K upper_bound, std::vector<std::pair<K, V>>& result) = 0;
         virtual void pretty_print(int depth = 0) = 0;
     };
 
@@ -72,6 +73,16 @@ class BPlusTree {
             }
 
             return this->children[i]->search(key);
+        }
+
+        void range_search(K lower_bound, K upper_bound, std::vector<std::pair<K, V>>& result) override {
+            // find the index
+            int i = 0;
+            while (i < this->keys.size() && lower_bound >= *this->keys[i]) {
+                i++;
+            }
+
+            this->children[i]->range_search(lower_bound, upper_bound, result);
         }
 
         void pretty_print(int depth = 0) override {
@@ -135,6 +146,18 @@ class BPlusTree {
             throw std::runtime_error("Key not found");
         }
 
+        void range_search(K lower_bound, K upper_bound, std::vector<std::pair<K, V>>& result) override {
+            for (int i = 0; i < this->keys.size(); i++) {
+                if (*this->keys[i] >= lower_bound && *this->keys[i] <= upper_bound) {
+                    result.push_back(std::make_pair(*this->keys[i], *this->values[i]));
+                }
+            }
+
+            if (this->next != nullptr) {
+                this->next->range_search(lower_bound, upper_bound, result);
+            }
+        }
+
         void pretty_print(int depth = 0) override {
             for (int i = 0; i < this->keys.size(); i++) {
                 for (int j = 0; j < depth; j++) {
@@ -181,6 +204,12 @@ public:
 
     V& search(K key) {
         return this->root->search(key);
+    }
+
+    std::vector<std::pair<K, V>> range_search(K lower_bound, K upper_bound) {
+        std::vector<std::pair<K, V>> result;
+        this->root->range_search(lower_bound, upper_bound, result);
+        return result;
     }
 
     void pretty_print() {
