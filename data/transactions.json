@@ -29,6 +29,18 @@
             "Timestamp": "2023-12-24T14:15:00Z",
             "Amount": 78.90,
             "Description": "Gastos en cena de celebración con amigos por motivo de fin de año"
+        },
+        {
+            "TransactionID": "ALC20231224160000T006",
+            "Timestamp": "2023-12-24T16:00:00Z",
+            "Amount": 50.00,
+            "Description": "Compra de boletos para el cine"
+        },
+        {
+            "TransactionID": "ALC20231224173000T007",
+            "Timestamp": "2023-12-24T17:30:00Z",
+            "Amount": 120.50,
+            "Description": "Gasto en cena familiar en restaurante"
         }
     ],
     "Bob": [
@@ -61,6 +73,18 @@
             "Timestamp": "2023-12-24T20:30:00Z",
             "Amount": 95.25,
             "Description": "Gastos en libros y materiales de estudio para cursos de desarrollo personal"
+        },
+        {
+            "TransactionID": "BOB20231224210000T006",
+            "Timestamp": "2023-12-24T21:00:00Z",
+            "Amount": 200.00,
+            "Description": "Compra de regalos de cumpleaños para amigos"
+        },
+        {
+            "TransactionID": "BOB20231224221500T007",
+            "Timestamp": "2023-12-24T22:15:00Z",
+            "Amount": 75.80,
+            "Description": "Gasto en cena con amigos en un nuevo restaurante"
         }
     ],
     "Charlie": [
@@ -93,6 +117,82 @@
             "Timestamp": "2023-12-24T20:30:00Z",
             "Amount": 210.25,
             "Description": "Compra de muebles para renovación del hogar"
+        },
+        {
+            "TransactionID": "CHR20231224210000T006",
+            "Timestamp": "2023-12-24T21:00:00Z",
+            "Amount": 150.00,
+            "Description": "Gasto en cena de cumpleaños con amigos"
+        },
+        {
+            "TransactionID": "CHR20231224221500T007",
+            "Timestamp": "2023-12-24T22:15:00Z",
+            "Amount": 95.50,
+            "Description": "Compra de entradas para el teatro"
+        }
+    ],
+    "David": [
+        {
+            "TransactionID": "DAV20231224103000T001",
+            "Timestamp": "2023-12-24T10:30:00Z",
+            "Amount": 50.20,
+            "Description": "Compra de alimentos en el supermercado"
+        },
+        {
+            "TransactionID": "DAV20231224120000T002",
+            "Timestamp": "2023-12-24T12:00:00Z",
+            "Amount": 75.60,
+            "Description": "Pago de factura de servicios públicos"
+        },
+        {
+            "TransactionID": "DAV20231224150000T003",
+            "Timestamp": "2023-12-24T15:00:00Z",
+            "Amount": 30.80,
+            "Description": "Gasto en café y merienda en una cafetería"
+        },
+        {
+            "TransactionID": "DAV20231224180000T004",
+            "Timestamp": "2023-12-24T18:00:00Z",
+            "Amount": 120.00,
+            "Description": "Compra de boletos para el cine"
+        },
+        {
+            "TransactionID": "DAV20231224210000T005",
+            "Timestamp": "2023-12-24T21:00:00Z",
+            "Amount": 45.25,
+            "Description": "Gasto en cena rápida en un restaurante de comida rápida"
+        }
+    ],
+    "Emily": [
+        {
+            "TransactionID": "EMI20231224113000T001",
+            "Timestamp": "2023-12-24T11:30:00Z",
+            "Amount": 90.50,
+            "Description": "Compra de libros en una librería"
+        },
+        {
+            "TransactionID": "EMI20231224140000T002",
+            "Timestamp": "2023-12-24T14:00:00Z",
+            "Amount": 25.30,
+            "Description": "Gasto en almuerzo en un restaurante de comida rápida"
+        },
+        {
+            "TransactionID": "EMI20231224163000T003",
+            "Timestamp": "2023-12-24T16:30:00Z",
+            "Amount": 60.80,
+            "Description": "Compra de ropa en una tienda de moda"
+        },
+        {
+            "TransactionID": "EMI20231224190000T004",
+            "Timestamp": "2023-12-24T19:00:00Z",
+            "Amount": 80.00,
+            "Description": "Gasto en cena en un restaurante de comida italiana"
+        },
+        {
+            "TransactionID": "EMI20231224213000T005",
+            "Timestamp": "2023-12-24T21:30:00Z",
+            "Amount": 35.25,
+            "Description": "Compra de boletos para el cine"
         }
     ]
 }
