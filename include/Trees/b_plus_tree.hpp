@@ -30,43 +30,46 @@ class BPlusTree {
         InternalNode(int min_degree) : Node(min_degree, false) {}
 
         std::pair<k__ptr, std::shared_ptr<Node>> insert(k__ptr key, v__ptr value) override {
-            // find the index
+            // find the index to insert the key
             int i = 0;
             while (i < this->keys.size() && *key > *this->keys[i]) {
                 i++;
             }
             
+            // insert method is called recursively on the child node at index i
             auto [median, new_child] = this->children[i]->insert(std::move(key), std::move(value));
 
+            // if the child node was split, insert the median key and the new child node at the correct index
             if (new_child) {
                 this->keys.insert(this->keys.begin() + i, median);
                 this->children.insert(this->children.begin() + i + 1, new_child);
-
-                // if the node is full (has more than 2 * min_degree - 1 keys), split it
-                if (this->keys.size() > 2 * this->min_degree - 1) {
-                    auto median_key = this->keys[this->min_degree - 1];
-                    auto right_split = std::make_shared<InternalNode>(this->min_degree);
-                    //right_split->parent = this->parent;
-
-                    for (int i = this->min_degree; i < this->keys.size(); i++) {
-                        right_split->keys.push_back(this->keys[i]);
-                    }
-                    this->keys.erase(this->keys.begin() + this->min_degree - 1, this->keys.end());
-
-                    for (int i = this->min_degree; i < this->children.size(); i++) {
-                        right_split->children.push_back(this->children[i]);
-                    }
-                    this->children.erase(this->children.begin() + this->min_degree, this->children.end());
-
-                    return std::make_pair(median_key, right_split);
-                }
             }
 
+            // if the node is full (has more than 2 * min_degree - 1 keys), split it
+            if (this->keys.size() > 2 * this->min_degree - 1) {
+                auto median_key = this->keys[this->min_degree - 1];
+                auto right_split = std::make_shared<InternalNode>(this->min_degree);
+                //right_split->parent = this->parent;
+
+                for (int i = this->min_degree; i < this->keys.size(); i++) {
+                    right_split->keys.push_back(this->keys[i]);
+                }
+                this->keys.erase(this->keys.begin() + this->min_degree - 1, this->keys.end());
+
+                for (int i = this->min_degree; i < this->children.size(); i++) {
+                    right_split->children.push_back(this->children[i]);
+                }
+                this->children.erase(this->children.begin() + this->min_degree, this->children.end());
+
+                // return the median key and the right split node to the parent node
+                return std::make_pair(median_key, right_split);
+            }
+
+            // return nullptr if the node was not split
             return std::make_pair(nullptr, nullptr);
         }
 
         V& search(K key) override {
-            // find the index
             int i = 0;
             while (i < this->keys.size() && key >= *this->keys[i]) {
                 i++;
@@ -76,7 +79,6 @@ class BPlusTree {
         }
 
         void range_search(K lower_bound, K upper_bound, std::vector<std::pair<K, V>>& result) override {
-            // find the index
             int i = 0;
             while (i < this->keys.size() && lower_bound >= *this->keys[i]) {
                 i++;
@@ -105,12 +107,13 @@ class BPlusTree {
         LeafNode(int min_degree) : Node(min_degree, true) {}
 
         std::pair<k__ptr, std::shared_ptr<Node>> insert(k__ptr key, v__ptr value) override {
-            // find the index
+            // find the index to insert the key and value
             int i = 0;
             while (i < this->keys.size() && *key > *this->keys[i]) {
                 i++;
             }
 
+            // insert the key and value at the correct index
             this->keys.insert(this->keys.begin() + i, std::move(key));
             this->values.insert(this->values.begin() + i, std::move(value));
 
@@ -130,9 +133,11 @@ class BPlusTree {
                 right_split->next = this->next;
                 this->next = right_split;
 
+                // return the first key of the right split node and the right split node to the parent node
                 return std::make_pair(right_split->keys[0], right_split);
             }
 
+            // return nullptr if the node was not split
             return std::make_pair(nullptr, nullptr);
         }
 
@@ -179,6 +184,7 @@ public:
         auto k = std::make_shared<K>(key);
         auto v = std::make_unique<V>(value);
 
+        // if the tree is empty, create a new leaf node
         if (this->root == nullptr) {
             auto new_root = std::make_shared<LeafNode>(this->min_degree);
             new_root->keys.push_back(std::move(k));
@@ -186,8 +192,10 @@ public:
 
             this->root = new_root;
         } else {
+            // insert method is called on the root node to insert the key and value
             auto [median, new_child] = this->root->insert(std::move(k), std::move(v));
 
+            // if the root node was split, create a new root node
             if (new_child) {
                 auto new_root = std::make_shared<InternalNode>(this->min_degree);
                 new_root->keys.push_back(median);

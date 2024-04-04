@@ -146,7 +146,7 @@ public:
 
             this->root = std::move(new_root);
         } else {
-            // nsert method is called on the root node to insert the key and value
+            // insert method is called on the root node to insert the key and value
             auto [median, new_child] = this->root->insert(std::move(k), std::move(v));
 
             // if the root node was split, create a new root node
