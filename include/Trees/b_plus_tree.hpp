@@ -4,8 +4,8 @@
 #include <memory>
 
 template <
-    typename K, // key type
-    typename V> // value type
+    typename K,
+    typename V>
 class BPlusTree {
     using k__ptr = std::shared_ptr<K>;
     using v__ptr = std::unique_ptr<V>;
