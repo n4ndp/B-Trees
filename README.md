@@ -1,4 +1,4 @@
-# **Trees | `B` and `B+`**
+# **Trees | `B tree` and `B+ tree`**
 
 This C++ implementation provides a `B` and `B+` tree implementation. Supports the following operations: `insert`, `search`, `range_search` and `pretty_print`.
 
