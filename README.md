@@ -1,10 +1,10 @@
 # **Trees | `B tree` and `B+ tree`**
 
-This C++ implementation provides a `B` and `B+` tree implementation. Supports the following operations: `insert`, `search`, `range_search` and `pretty_print`.
+Esta implementación en C++ proporciona una implementación de los árboles `B` y `B+`. Soporta las siguientes operaciones: `insert`, `search`, `range_search` y `pretty_print`.
 
-## **Dataset: [Transactions](https://raw.githubusercontent.com/n4ndp/B-Trees/main/data/transactions.json)**
+## **Conjunto de Datos: [Transacciones](https://raw.githubusercontent.com/n4ndp/B-Trees/main/data/transactions.json)**
 
-This dataset contains detailed information about transactions made by different users. The data is structured as follows:
+Este conjunto de datos contiene información detallada sobre las transacciones realizadas por diferentes usuarios. La estructura de los datos es la siguiente:
 
 ```json
 {
@@ -36,7 +36,7 @@ This dataset contains detailed information about transactions made by different 
 }
 ```
 
-## **B Tree**
+## **Árbol B**
 
 ```textplain
       78.6: (Bob, BOB20231224114500T001)
@@ -56,7 +56,7 @@ This dataset contains detailed information about transactions made by different 
       320.45: (Bob, BOB20231224171500T004)
 ```
 
-## **B+ Tree**
+## **Árbol B+**
 
 ```textplain
       78.6: (Bob, BOB20231224114500T001)
